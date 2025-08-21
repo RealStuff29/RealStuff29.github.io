@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Justin Bieber • Fan Page (Rapid Prototype)</title>
+  <meta name="description" content="Unofficial Justin Bieber fan page — gallery, videos, and quick links. Built with vanilla HTML/CSS/JS." />
+  <style>
+    :root{
+      --bg:#0b0d12;
+      --bg-soft:#11141b;
+      --card:#161a23;
+      --text:#e9ecf1;
+      --muted:#aab3c2;
+      --brand:#ff7bd3;
+      --brand-2:#8ab4ff;
+      --ring: 0 0 0 2px rgba(138,180,255,.35);
+    }
+    .light{
+      --bg:#f7f8fb; --bg-soft:#fff; --card:#ffffff; --text:#101318; --muted:#475066; --brand:#d43cff; --brand-2:#3366ff; --ring: 0 0 0 2px rgba(51,102,255,.25);
+    }
+    html,body{height:100%}
+    body{margin:0; font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, Noto Sans, "Apple Color Emoji","Segoe UI Emoji"; background:var(--bg); color:var(--text);}
+    a{color:var(--brand)}
+    .container{max-width:1100px; margin:auto; padding:0 20px}
+
+    /* Header */
+    header{position:sticky; top:0; z-index:50; backdrop-filter:saturate(140%) blur(10px); background:linear-gradient(180deg, rgba(12,14,18,.8), rgba(12,14,18,.3)); border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav{display:flex; align-items:center; justify-content:space-between; padding:10px 0}
+    .logo{display:flex; align-items:center; gap:10px; text-decoration:none;}
+    .logo .badge{width:36px; height:36px; border-radius:10px; background:conic-gradient(from 210deg, var(--brand), var(--brand-2)); display:grid; place-items:center; font-weight:800; color:#0b0d12; letter-spacing:.5px}
+    .logo span{font-weight:700; letter-spacing:.5px}
+    .nav ul{display:flex; gap:18px; list-style:none; margin:0; padding:0}
+    .nav a{color:var(--text); text-decoration:none; opacity:.9}
+    .nav a:hover{opacity:1}
+    .btn{appearance:none; border:1px solid rgba(255,255,255,.15); background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); color:var(--text); padding:8px 12px; border-radius:10px; cursor:pointer}
+    .btn:hover{box-shadow:var(--ring)}
+
+    /* Hero */
+    .hero{position:relative; overflow:hidden;}
+    .hero .bg{position:absolute; inset:0; background:
+        radial-gradient(80% 60% at 20% 10%, rgba(255,123,211,.18), transparent 60%),
+        radial-gradient(80% 60% at 80% 0%, rgba(138,180,255,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg-soft), transparent 50%);
+      filter:saturate(120%)}
+    .hero .content{position:relative; padding:68px 0 36px}
+    .hero h1{font-size:clamp(28px, 4vw, 48px); line-height:1.1; margin:0 0 10px}
+    .hero p{max-width:65ch; color:var(--muted); margin:0 0 18px}
+    .hero .actions{display:flex; flex-wrap:wrap; gap:10px}
+
+    /* Section */
+    section{padding:36px 0; border-top:1px solid rgba(255,255,255,.06)}
+    section h2{margin:0 0 10px; font-size:clamp(20px,3vw,28px)}
+    .muted{color:var(--muted)}
+
+    /* Gallery */
+    .toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:12px 0 18px}
+    .toolbar input[type="text"]{padding:9px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.16); background:var(--card); color:var(--text); min-width:220px}
+    .grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:12px}
+    .card{position:relative; border-radius:14px; overflow:hidden; background:var(--card); border:1px solid rgba(255,255,255,.08)}
+    .card img{width:100%; height:180px; object-fit:cover; display:block}
+    .chip{position:absolute; left:8px; bottom:8px; background:rgba(0,0,0,.55); color:#fff; padding:4px 8px; border-radius:999px; font-size:12px}
+    .card .credit{position:absolute; right:8px; bottom:8px; background:rgba(0,0,0,.5); padding:4px 8px; border-radius:6px; font-size:11px; color:#ddd}
+
+    /* Lightbox */
+    .lightbox{position:fixed; inset:0; display:none; place-items:center; background:rgba(5,6,10,.85); z-index:100}
+    .lightbox.open{display:grid}
+    .lightbox img{max-width:90vw; max-height:80vh; border-radius:12px; box-shadow:0 8px 40px rgba(0,0,0,.6)}
+    .lightbox .meta{margin-top:10px; color:#e9ecf1; text-align:center}
+    .lightbox .close, .lightbox .prev, .lightbox .next{position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2); padding:10px 14px; border-radius:12px; cursor:pointer}
+    .lightbox .close{top:20px; right:20px; transform:none}
+    .lightbox .prev{left:20px}
+    .lightbox .next{right:20px}
+
+    /* Videos */
+    .video-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px}
+    .video{aspect-ratio:16/9; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,.08)}
+    iframe{width:100%; height:100%; border:0}
+
+    /* Subscribe */
+    form.news{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+    form.news input{padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.16); background:var(--card); color:var(--text)}
+
+    footer{padding:36px 0; text-align:center; color:var(--muted)}
+    .note{font-size:13px; color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="logo" href="#top">
+        <div class="badge">JB</div>
+        <span>Justin Bieber — Unofficial</span>
+      </a>
+      <nav>
+        <ul>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#videos">Videos</a></li>
+          <li><a href="#subscribe">Subscribe</a></li>
+          <li><button class="btn" id="themeToggle" title="Toggle theme">Toggle Theme</button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" id="top">
+    <div class="bg" aria-hidden="true"></div>
+    <div class="container content">
+      <h1>Welcome Beliebers 💜</h1>
+      <p class="muted">A super lightweight fan page template you can drop onto any static host. No frameworks, pure HTML/CSS/JS. Swap in your own photos from Slack <code>#lesson-g3</code> or <code>#lesson-g4</code>, or paste image URLs you find online.</p>
+      <div class="actions">
+        <a class="btn" href="#videos">▶︎ Play hits</a>
+        <button class="btn" id="setHero">Set hero background from image URL</button>
+      </div>
+      <p class="note">Tip: use the “Add by URL” or “Upload” buttons in the Gallery to populate photos fast.</p>
+    </div>
+  </section>
+
+  <main class="container">
+    <!-- Gallery -->
+    <section id="gallery">
+      <h2>Gallery</h2>
+      <p class="muted">Drop in images from Slack or anywhere on the web. Everything stays in your browser (localStorage).</p>
+      <div class="toolbar">
+        <input type="text" id="filter" placeholder="Search caption… (e.g., Purpose Tour)"/>
+        <input type="url" id="urlInput" placeholder="Paste image URL…"/>
+        <button class="btn" id="addFromUrl">Add by URL</button>
+        <input type="file" id="fileInput" accept="image/*" multiple />
+        <button class="btn" id="clearGallery" title="Remove all images">Clear</button>
+      </div>
+      <div class="grid" id="grid"></div>
+      <p class="note">Starter idea: paste a Wikimedia Commons link or any public photo URL. You can also drag & drop files onto this page.</p>
+    </section>
+
+    <!-- Videos -->
+    <section id="videos">
+      <h2>Videos</h2>
+      <p class="muted">Official music videos from Justin Bieber's YouTube channel.</p>
+      <div class="toolbar">
+        <button class="btn" data-video="fRh_vgS2dFE">Sorry</button>
+        <button class="btn" data-video="oyEuk8j8imI">Love Yourself</button>
+        <button class="btn" data-video="tQ0yjYUFKAE">Peaches</button>
+        <button class="btn" data-video="DK_0jXPuIr0">What Do You Mean?</button>
+      </div>
+      <div class="video-grid" id="videoGrid">
+        <!-- iframes injected by JS -->
+      </div>
+    </section>
+
+    <!-- Subscribe / Contact (dummy) -->
+    <section id="subscribe">
+      <h2>Subscribe for updates</h2>
+      <p class="muted">This is a demo form; replace with your own backend or a service like Formspark / Netlify Forms.</p>
+      <form class="news" id="newsForm" novalidate>
+        <input type="text" id="name" placeholder="Your name" required />
+        <input type="email" id="email" placeholder="Email" required />
+        <button class="btn" type="submit">Join</button>
+      </form>
+      <p class="note" id="formMsg" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="note">Built with ❤️ for fans. Not affiliated with Justin Bieber or his team.</div>
+    </div>
+  </footer>
+
+  <div class="lightbox" id="lightbox" aria-modal="true" role="dialog">
+    <button class="close btn" aria-label="Close">✕</button>
+    <button class="prev btn" aria-label="Previous">◀</button>
+    <img alt="Expanded" />
+    <button class="next btn" aria-label="Next">▶</button>
+    <div class="meta" id="lbMeta"></div>
+  </div>
+
+  <script>
+    // ===== Utilities =====
+    const $ = (sel, ctx=document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
+
+    // ===== Theme Toggle =====
+    const root = document.documentElement;
+    const themeToggle = $('#themeToggle');
+    const savedTheme = localStorage.getItem('theme');
+    if(savedTheme === 'light'){ root.classList.add('light'); }
+    themeToggle.addEventListener('click', ()=>{
+      root.classList.toggle('light');
+      localStorage.setItem('theme', root.classList.contains('light') ? 'light' : 'dark');
+    });
+
+    // ===== Smooth scroll for nav anchors =====
+    $$('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', e=>{
+        const id = a.getAttribute('href').slice(1);
+        const el = document.getElementById(id);
+        if(el){ e.preventDefault(); el.scrollIntoView({behavior:'smooth', block:'start'}); }
+      });
+    });
+
+    // ===== Hero background from URL =====
+    $('#setHero').addEventListener('click', async ()=>{
+      const url = prompt('Paste an image URL to set as the hero background:');
+      if(!url) return;
+      const hero = $('.hero .bg');
+      hero.style.backgroundImage = `, url(${url})`;
+      hero.style.backgroundSize = 'cover';
+      hero.style.backgroundPosition = 'center';
+      localStorage.setItem('heroBg', url);
+    });
+    const heroBg = localStorage.getItem('heroBg');
+    if(heroBg){
+      const hero = $('.hero .bg');
+      hero.style.backgroundImage = `, url(${heroBg})`;
+      hero.style.backgroundSize = 'cover';
+      hero.style.backgroundPosition = 'center';
+    }
+
+    // ===== Gallery State =====
+    let gallery = [];
+    const grid = $('#grid');
+    const filter = $('#filter');
+
+    function saveGallery(){ localStorage.setItem('jb_gallery', JSON.stringify(gallery)); }
+    function loadGallery(){
+      try{ gallery = JSON.parse(localStorage.getItem('jb_gallery')) || []; }
+      catch{ gallery = []; }
+      renderGallery();
+    }
+
+    // Seed with a couple of placeholders (replace quickly via Upload/Add URL)
+    const seeded = localStorage.getItem('jb_seeded');
+    if(!seeded){
+      gallery = [
+        {src:'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1200&auto=format&fit=crop', caption:'Concert vibes', credit:'Unsplash placeholder'},
+        {src:'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1200&auto=format&fit=crop', caption:'Stage lights', credit:'Unsplash placeholder'}
+      ];
+      saveGallery();
+      localStorage.setItem('jb_seeded','1');
+    }
+
+    // Render
+    function renderGallery(){
+      const q = filter.value.trim().toLowerCase();
+      grid.innerHTML = '';
+      const list = gallery.filter(g=> !q || g.caption?.toLowerCase().includes(q) );
+      list.forEach((item, idx)=>{
+        const card = document.createElement('figure');
+        card.className = 'card';
+        card.innerHTML = `
+          <img loading="lazy" src="${item.src}" alt="${item.caption || 'Justin Bieber photo'}" />
+          <figcaption class="chip">${item.caption || 'Untitled'}</figcaption>
+          <div class="credit">${item.credit || ''}</div>`;
+        card.addEventListener('click', ()=> openLightbox(idx, list));
+        grid.appendChild(card);
+      });
+    }
+
+    // Add by URL
+    $('#addFromUrl').addEventListener('click', ()=>{
+      const url = $('#urlInput').value.trim();
+      if(!url) return alert('Paste an image URL first.');
+      const caption = prompt('Caption for this photo? (optional)') || '';
+      gallery.push({src:url, caption, credit:'added by URL'});
+      saveGallery(); renderGallery(); $('#urlInput').value='';
+    });
+
+    // Upload from files
+    $('#fileInput').addEventListener('change', (e)=>{
+      const files = Array.from(e.target.files || []);
+      if(!files.length) return;
+      files.forEach(f=>{
+        const reader = new FileReader();
+        reader.onload = ev=>{
+          gallery.push({src:ev.target.result, caption:f.name.replace(/\.[^.]+$/, ''), credit:'uploaded'});
+          saveGallery(); renderGallery();
+        };
+        reader.readAsDataURL(f);
+      });
+      e.target.value='';
+    });
+
+    // Drag & drop
+    document.addEventListener('dragover', e=>{ e.preventDefault(); });
+    document.addEventListener('drop', e=>{
+      e.preventDefault();
+      const files = Array.from(e.dataTransfer.files || []);
+      files.filter(f=>f.type.startsWith('image/')).forEach(f=>{
+        const reader = new FileReader();
+        reader.onload = ev=>{
+          gallery.push({src:ev.target.result, caption:f.name.replace(/\.[^.]+$/, ''), credit:'dropped'});
+          saveGallery(); renderGallery();
+        };
+        reader.readAsDataURL(f);
+      });
+    });
+
+    // Filter
+    filter.addEventListener('input', renderGallery);
+
+    // Clear gallery
+    $('#clearGallery').addEventListener('click', ()=>{
+      if(confirm('Clear all photos from this browser?')){ gallery = []; saveGallery(); renderGallery(); }
+    });
+
+    // Lightbox
+    const lb = $('#lightbox');
+    const lbImg = $('#lightbox img');
+    const lbMeta = $('#lbMeta');
+    let lbList = []; let lbIndex = 0;
+
+    function openLightbox(index, list){
+      lbList = list; lbIndex = index;
+      const item = lbList[lbIndex];
+      lbImg.src = item.src; lbImg.alt = item.caption || 'Photo';
+      lbMeta.textContent = `${item.caption || ''} ${item.credit? '• '+item.credit: ''}`;
+      lb.classList.add('open');
+    }
+    function closeLightbox(){ lb.classList.remove('open'); }
+    function navLightbox(delta){ lbIndex = (lbIndex + delta + lbList.length) % lbList.length; openLightbox(lbIndex, lbList); }
+
+    $('.lightbox .close').addEventListener('click', closeLightbox);
+    $('.lightbox .prev').addEventListener('click', ()=> navLightbox(-1));
+    $('.lightbox .next').addEventListener('click', ()=> navLightbox(+1));
+    document.addEventListener('keydown', e=>{
+      if(!lb.classList.contains('open')) return;
+      if(e.key==='Escape') closeLightbox();
+      if(e.key==='ArrowLeft') navLightbox(-1);
+      if(e.key==='ArrowRight') navLightbox(+1);
+    });
+
+    // ===== Videos =====
+    const videoIds = ['fRh_vgS2dFE','oyEuk8j8imI','tQ0yjYUFKAE'];
+    const videoGrid = $('#videoGrid');
+
+    function renderVideos(){
+      videoGrid.innerHTML='';
+      videoIds.forEach(id=>{
+        const wrap = document.createElement('div');
+        wrap.className='video';
+        wrap.innerHTML = `<iframe loading="lazy" src="https://www.youtube.com/embed/${id}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen title="Justin Bieber video"></iframe>`;
+        videoGrid.appendChild(wrap);
+      });
+    }
+
+    $$('#videos .toolbar .btn').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const id = b.dataset.video; if(!id) return;
+        videoIds.unshift(id);
+        const unique = [...new Set(videoIds)];
+        videoIds.length = 0; videoIds.push(...unique.slice(0,3));
+        renderVideos();
+        document.getElementById('videos').scrollIntoView({behavior:'smooth'});
+      });
+    });
+
+    // ===== Form (demo) =====
+    $('#newsForm').addEventListener('submit', e=>{
+      e.preventDefault();
+      const name = $('#name').value.trim();
+      const email = $('#email').value.trim();
+      if(!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+        $('#formMsg').textContent = 'Please enter a valid name and email.';
+        return;
+      }
+      $('#formMsg').textContent = `Thanks, ${name}! You’re on the list. (Demo only — wire this up to a real service.)`;
+      $('#newsForm').reset();
+    });
+
+    // ===== Init =====
+    loadGallery();
+    renderVideos();
+  </script>
+</body>
+</html>
